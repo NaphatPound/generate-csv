@@ -9,7 +9,7 @@ import {
   Card,
   Typography,
   Space,
-  message,
+  App,
   Divider,
   Row,
   Col,
@@ -29,6 +29,7 @@ const KNOWN_TABLES = [
 ]
 
 export default function EditTemplatePage() {
+  const { message } = App.useApp()
   const router = useRouter()
   const params = useParams()
   const [form] = Form.useForm()

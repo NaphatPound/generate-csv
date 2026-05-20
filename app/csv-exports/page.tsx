@@ -10,7 +10,7 @@ import {
   Typography,
   Row,
   Col,
-  message,
+  App,
   Modal,
 } from 'antd'
 import {
@@ -23,6 +23,7 @@ import MainLayout from '@/components/MainLayout'
 import type { CsvExportRecord } from '@/types'
 
 export default function CsvExportsPage() {
+  const { message } = App.useApp()
   const [exports, setExports] = useState<CsvExportRecord[]>([])
   const [loading, setLoading] = useState(false)
   const [previewOpen, setPreviewOpen] = useState(false)

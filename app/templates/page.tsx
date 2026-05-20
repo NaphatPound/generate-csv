@@ -10,7 +10,7 @@ import {
   Modal,
   Form,
   Select,
-  message,
+  App,
   Typography,
   Card,
   Row,
@@ -37,6 +37,7 @@ const KNOWN_TABLES = [
 ]
 
 export default function TemplatesPage() {
+  const { message } = App.useApp()
   const router = useRouter()
   const [templates, setTemplates] = useState<CsvTemplateData[]>([])
   const [loading, setLoading] = useState(false)

@@ -1,0 +1,80 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* Ant Design overrides */
+.ant-layout {
+  min-height: 100vh;
+}
+
+.ant-layout-sider {
+  background: #1a2332 !important;
+}
+
+.ant-menu-dark {
+  background: transparent !important;
+}
+
+.ant-menu-item-selected {
+  background: linear-gradient(135deg, #3b7cff 0%, #6b5ce7 100%) !important;
+}
+
+.ant-btn-primary {
+  background: linear-gradient(135deg, #3b7cff 0%, #6b5ce7 100%) !important;
+  border: none !important;
+}
+
+.ant-btn-primary:hover {
+  opacity: 0.9;
+}
+
+.ant-card {
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.ant-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.ant-table-wrapper {
+  background: white;
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.ant-table-thead > tr > th {
+  background: #f5f7fa !important;
+  font-weight: 600;
+}
+
+.ant-table-tbody > tr:hover > td {
+  background: #f0f5ff !important;
+}
+
+.ant-tag {
+  border-radius: 4px;
+}
+
+.ant-input:hover,
+.ant-select:hover .ant-select-selector {
+  border-color: #3b7cff !important;
+}
+
+.ant-input:focus,
+.ant-select-focused .ant-select-selector {
+  border-color: #3b7cff !important;
+  box-shadow: 0 0 0 2px rgba(59, 124, 255, 0.1) !important;
+}

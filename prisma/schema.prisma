@@ -1,0 +1,32 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model CsvTemplate {
+  id          String          @id @default(cuid())
+  name        String          @unique
+  description String?
+  mainTable   String
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+  fields      TemplateField[]
+
+  @@map("csv_templates")
+}
+
+model TemplateField {
+  id         String      @id @default(cuid())
+  templateId String
+  columnName String
+  fieldPath  String
+  sortOrder  Int         @default(0)
+  createdAt  DateTime    @default(now())
+  template   CsvTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
+
+  @@index([templateId], map: "idx_template_fields_template_id")
+  @@map("template_fields")
+}

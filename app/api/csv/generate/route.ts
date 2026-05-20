@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { resolveTemplate, resolveData } from '@/lib/resolveData'
+import { uploadFile } from '@/services/storageService'
+import { createExport } from '@/lib/exportStore'
 
 export const dynamic = 'force-dynamic'
 
@@ -26,6 +28,38 @@ async function generateCsvData(templateId: string, filters?: Record<string, stri
   return { template, headers, rows, csvContent }
 }
 
+async function saveToMinioAndStore(
+  csvContent: string,
+  templateId: string,
+  templateName: string,
+  rowCount: number
+) {
+  const BOM = '\uFEFF'
+  const csvBuffer = Buffer.from(BOM + csvContent, 'utf-8')
+  const fileName = `${templateName}.csv`
+  const safeName = fileName.replace(/[^\x20-\x7E\w.-]/g, '_')
+
+  let objectName = `csv/${Date.now()}-${safeName}`
+  let fileSize = csvBuffer.length
+
+  try {
+    objectName = await uploadFile(csvBuffer, fileName, 'text/csv; charset=utf-8')
+  } catch (e) {
+    console.warn('MinIO upload failed, saving with mock objectName:', e)
+  }
+
+  const record = await createExport({
+    templateId,
+    templateName,
+    fileName,
+    objectName,
+    fileSize,
+    rowCount,
+  })
+
+  return { csvBuffer, record }
+}
+
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
@@ -48,6 +82,10 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Template not found' }, { status: 404 })
     }
 
+    const { csvBuffer, record } = await saveToMinioAndStore(
+      result.csvContent, templateId, result.template.name, result.rows.length
+    )
+
     if (format === 'json') {
       return NextResponse.json({
         template: { id: result.template.id, name: result.template.name },
@@ -55,15 +93,15 @@ export async function GET(request: NextRequest) {
         rows: result.rows,
         total: result.rows.length,
         csv: result.csvContent,
+        export: record,
       })
     }
 
-    const BOM = '\uFEFF'
-    const csvBuffer = Buffer.from(BOM + result.csvContent, 'utf-8')
     return new NextResponse(csvBuffer, {
       headers: {
         'Content-Type': 'text/csv; charset=utf-8',
-        'Content-Disposition': `attachment; filename="${result.template.name.replace(/[^\x20-\x7E]/g, '_')}.csv"`,
+        'Content-Disposition': `attachment; filename="${record.fileName.replace(/[^\x20-\x7E]/g, '_')}"`,
+        'X-Export-Id': record.id,
       },
     })
   } catch (error) {
@@ -85,12 +123,15 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Template not found' }, { status: 404 })
     }
 
-    const BOM = '\uFEFF'
-    const csvBuffer = Buffer.from(BOM + result.csvContent, 'utf-8')
+    const { csvBuffer, record } = await saveToMinioAndStore(
+      result.csvContent, templateId, result.template.name, result.rows.length
+    )
+
     return new NextResponse(csvBuffer, {
       headers: {
         'Content-Type': 'text/csv; charset=utf-8',
-        'Content-Disposition': `attachment; filename="${result.template.name.replace(/[^\x20-\x7E]/g, '_')}.csv"`,
+        'Content-Disposition': `attachment; filename="${record.fileName.replace(/[^\x20-\x7E]/g, '_')}"`,
+        'X-Export-Id': record.id,
       },
     })
   } catch (error) {

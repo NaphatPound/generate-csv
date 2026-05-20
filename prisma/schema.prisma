@@ -30,3 +30,16 @@ model TemplateField {
   @@index([templateId], map: "idx_template_fields_template_id")
   @@map("template_fields")
 }
+
+model CsvExport {
+  id           String   @id @default(cuid())
+  templateId   String
+  templateName String
+  fileName     String
+  objectName   String
+  fileSize     Int?
+  rowCount     Int?
+  createdAt    DateTime @default(now())
+
+  @@map("csv_exports")
+}

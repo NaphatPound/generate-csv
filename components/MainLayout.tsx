@@ -5,7 +5,7 @@ import { Layout, Menu, Typography } from 'antd'
 import {
   HomeOutlined,
   FileTextOutlined,
-  PlusOutlined,
+  ExportOutlined,
 } from '@ant-design/icons'
 import { useRouter, usePathname } from 'next/navigation'
 
@@ -14,6 +14,7 @@ const { Header, Sider, Content } = Layout
 const menuItems = [
   { key: '/', icon: <HomeOutlined />, label: 'Dashboard' },
   { key: '/templates', icon: <FileTextOutlined />, label: 'Templates' },
+  { key: '/csv-exports', icon: <ExportOutlined />, label: 'CSV Exports' },
 ]
 
 export default function MainLayout({ children }: { children: React.ReactNode }) {
